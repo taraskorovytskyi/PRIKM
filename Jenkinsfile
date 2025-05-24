@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = 'dockerhub_token' // ID облікових даних в Jenkins
+        DOCKERHUB_CREDENTIALS = 'dockerhub_token' // ID Jenkins credentials
         DOCKERHUB_USER = 'tarasitpa'
         IMAGE_NAME = 'prikm'
         IMAGE_TAG = "${BUILD_NUMBER}"
-        TEAMS_WEBHOOK = 'https://lpnu.webhook.office.com/webhookb2/dc0a6495-7ea0-443e-b2c5-a740df974e31@7631cd62-5187-4e15-8b8e-ef653e366e7a/IncomingWebhook/8689910739e7460cb8b7c0eeae135013/c3f18ca5-a7b5-4a8b-836b-815b3ad365d5/V2QVHrqnohHfmyOlPNVeRDiV9qB_B2j5EWPUZhk4J3Vhc1'
+        WEBHOOK_URL = 'https://lpnu.webhook.office.com/webhookb2/dc0a6495-7ea0-443e-b2c5-a740df974e31@7631cd62-5187-4e15-8b8e-ef653e366e7a/IncomingWebhook/8689910739e7460cb8b7c0eeae135013/c3f18ca5-a7b5-4a8b-836b-815b3ad365d5/V2QVHrqnohHfmyOlPNVeRDiV9qB_B2j5EWPUZhk4J3Vhc1'
     }
 
     stages {
@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Push to registry') {
+        stage('Push to Docker Hub') {
             steps {
                 withDockerRegistry([ credentialsId: "${DOCKERHUB_CREDENTIALS}", url: "https://index.docker.io/v1/" ]) {
                     sh """
@@ -57,16 +57,16 @@ pipeline {
 
         stage('Send Teams notification') {
             steps {
-                office365ConnectorSend message: "✅ Deploy успішний! Tag: ${IMAGE_TAG}",
-                                       webhookUrl: "${TEAMS_WEBHOOK}"
+                office365ConnectorSend message: "✅ Deploy успішний! Tag: ${IMAGE_TAG}", 
+                                       webhookUrl: "${WEBHOOK_URL}"
             }
         }
     }
 
     post {
         failure {
-            office365ConnectorSend message: "❌ Deploy провалився. Перевір Jenkins лог.",
-                                   webhookUrl: "${TEAMS_WEBHOOK}"
+            office365ConnectorSend message: "❌ Pipeline завершився з помилкою. Перевір Jenkins лог!", 
+                                   webhookUrl: "${WEBHOOK_URL}"
         }
     }
 }
