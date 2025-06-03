@@ -1,0 +1,17 @@
+{
+	"ulid": "01JWV1PV3PXS4RN46AZCZB01GE",
+	"minTime": 1748891058809,
+	"maxTime": 1748894400000,
+	"stats": {
+		"numSamples": 99698,
+		"numSeries": 6559,
+		"numChunks": 6559
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01JWV1PV3PXS4RN46AZCZB01GE"
+		]
+	},
+	"version": 1
+}
